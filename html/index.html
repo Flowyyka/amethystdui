@@ -1,0 +1,1447 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Amethyst Menu — Web Showcase</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   Amethyst DUI — Purple Admin Panel, Docked Left
+   ========================================================= */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --accent: 168, 85, 247;        /* Purple accent */
+  --accent-2: 147, 51, 234;      /* Violet secondary */
+  --danger: 255, 92, 92;
+  --success: 74, 222, 128;
+  --warn: 250, 176, 5;
+
+  --panel-w: 20.5vw;
+  --row-h: 2.15vw;
+  --radius: 0.7vw;
+
+  --border-alpha: 0.28;
+  --tint: 255,255,255;
+  --bg-0: rgba(12, 12, 12, 0.92);
+  --bg-1: rgba(22, 22, 22, 0.9);
+  --bg-2: rgba(28, 28, 28, 0.7);
+  --well: rgba(0, 0, 0, 0.35);
+  --line: rgba(var(--tint), 0.06);
+  --line-strong: rgba(var(--accent), var(--border-alpha));
+
+  --t1: rgba(var(--tint), 0.94);
+  --t2: rgba(var(--tint), 0.62);
+  --t3: rgba(var(--tint), 0.38);
+}
+html { color-scheme: normal !important; }
+body {
+  margin: 0;
+  background: transparent !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100vh;
+  overflow: hidden !important;
+  user-select: none;
+  color: var(--t1);
+}
+
+
+
+/* ---------- Wrapper (docked LEFT) ---------- */
+.PWrapper {
+  position: absolute;
+  left: 1.5vw;
+  top: 3.5vh;
+  width: var(--panel-w);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  border: 1px solid var(--line);
+  box-shadow:
+    0 0 0 1px rgba(var(--accent), 0.06),
+    0 0 40px rgba(var(--accent), 0.08);
+  overflow: hidden;
+  transform-origin: top left;
+  transform: scale(0.9);
+}
+@keyframes menuPopIn  { from { opacity:0; transform:scale(.82);} to { opacity:1; transform:scale(.9);} }
+@keyframes menuPopOut { from { opacity:1; transform:scale(.9);} to { opacity:0; transform:scale(.82);} }
+
+#rainbowFilter { display: contents; }
+@keyframes rainbowCycle { 0%{filter:hue-rotate(0)} 100%{filter:hue-rotate(360deg)} }
+.rainbow-active #rainbowFilter { display:block; animation: rainbowCycle 4s linear infinite; }
+
+/* ---------- Banner ---------- */
+.PBanner {
+  position: relative;
+  width: 100%;
+  height: 8.5vw;
+  overflow: hidden;
+  background: var(--bg-0);
+  border-bottom: 1px solid var(--line-strong);
+}
+.PBanner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: saturate(1.1) contrast(1.05);
+}
+.BFade {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(12,12,18,0.75) 100%);
+  pointer-events: none;
+}
+.BOver {
+  position: absolute;
+  left: 0.9vw; bottom: 0.55vw; right: 0.9vw;
+  display: flex; align-items: center;
+}
+.BTitle {
+  display: flex; align-items: center; justify-content: flex-start;
+  gap: 0.4vw;
+  font-size: 0.75vw; font-weight: 700; letter-spacing: 0.02em; color: rgba(255,255,255,0.95);
+  text-shadow:
+    1px 0 2px rgba(0, 0, 0, 0.5),
+   -1px 0 2px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 -1px 2px rgba(0, 0, 0, 0.5);
+}
+.BTitle i { font-size: 0.55vw; text-shadow:
+    1px 0 2px rgba(0, 0, 0, 0.5),
+   -1px 0 2px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 -1px 2px rgba(0, 0, 0, 0.5); color: rgba(255,255,255,0.7); position: relative; top: 0.00vw; }
+.BTitle span { line-height: 1; }
+.BTag {
+  position: absolute;
+  top: 0.6vw; right: 0.7vw;
+  font-size: 0.6vw;
+  padding: 0.15vw 0.45vw;
+  border-radius: 999px;
+  color: rgb(var(--accent));
+  background: rgba(var(--accent), 0.12);
+  border: 1px solid rgba(var(--accent), 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  z-index: 2;
+}
+.BPH { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.45); gap:.4vw; font-size:.75vw;}
+
+/* ---------- List ---------- */
+.PList {
+  position: relative;
+  max-height: calc(var(--row-h) * 9);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.PList::-webkit-scrollbar { display:none; }
+.PListInner { position: relative; padding: 0.0vw 0.0vw 0.0vw; }
+
+.PHover {
+  position: absolute;
+  left: 0; right: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, rgba(var(--accent), 0.22), rgba(var(--accent), 0.06));
+  box-shadow: inset 0 0 0 1px rgba(var(--accent), 0.45), 0 0 18px rgba(var(--accent), 0.18);
+  pointer-events: none;
+  transition: top 0.26s cubic-bezier(0.22, 1, 0.36, 1), height 0.26s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+  z-index: 0;
+}
+
+.PTab {
+  position: relative;
+  display: flex; align-items: center;
+  min-height: var(--row-h);
+  padding: 0 0.65vw 0 0.55vw;
+  border-radius: 0.45vw;
+  color: var(--t2);
+  font-size: 0.78vw;
+  font-weight: 500;
+  z-index: 1;
+  cursor: pointer;
+  transition: color 0.22s ease;
+}
+.PTab.active { color: var(--t1); }
+
+.PTIcon {
+  width: 1.2vw; text-align: center;
+  color: var(--t3);
+  margin-right: 0.55vw;
+  font-size: 0.8vw;
+  transition: color 0.22s ease;
+}
+.PTab.active .PTIcon { color: rgb(var(--accent)); }
+.PTab.warn.active .PTIcon,
+.PTab.warn .PWarnIcon { color: rgb(var(--warn)); }
+
+.PTLabel {
+  flex: 1;
+  display: flex; align-items: center; gap: 0.4vw;
+  min-width: 0;
+}
+.PTLabelText { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.PWarnIcon { color: rgb(var(--warn)); font-size: 0.7vw; }
+
+.PTArrow { color: var(--t3); font-size: 0.7vw; }
+.PTab.active .PTArrow { color: rgb(var(--accent)); }
+
+.PDropLabel {
+  max-width: 45%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--t1);
+  font-size: 0.72vw;
+  padding: 0.15vw 0.45vw;
+  border-radius: 0.3vw;
+  background: rgba(var(--accent), 0.08);
+  border: 1px solid rgba(var(--accent), 0.22);
+}
+
+.PInputRight { display:flex; align-items:center; gap:.35vw; color:var(--t2); font-size:.7vw; }
+.PInputVal {
+  padding: 0.15vw 0.4vw; border-radius: 0.3vw;
+  background: rgba(var(--tint),0.05);
+  border: 1px dashed var(--line);
+  max-width: 8vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+/* Toggle switch */
+.TOptions { display:flex; align-items:center; gap:.5vw; }
+.Checkbox {
+  position: relative;
+  width: 1.9vw; height: 1vw;
+  border-radius: 999px;
+  background: rgba(var(--tint),0.08);
+  border: 1px solid var(--line);
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.Checkbox .Inside {
+  position: absolute; top: 50%; left: 0.1vw;
+  transform: translateY(-50%);
+  width: 0.72vw; height: 0.72vw; border-radius: 999px;
+  background: rgba(var(--tint), 0.9);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  transition: left 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
+}
+.Checkbox.Checked {
+  background: rgb(var(--accent));
+  border-color: rgba(var(--accent), 0.7);
+  box-shadow: 0 0 10px rgba(var(--accent), 0.45), inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+.Checkbox.Checked .Inside { left: calc(100% - 0.72vw - 0.1vw); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.45); }
+
+/* Slider */
+.Slider {
+  position: relative;
+  width: 6vw; height: 0.35vw;
+  border-radius: 999px;
+  background: rgba(var(--tint),0.08);
+  cursor: pointer;
+}
+.Slider .Progress {
+  position: relative;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(var(--accent),0.55), rgba(var(--accent),1));
+  border-radius: 999px;
+}
+.Slider .Thumb {
+  position: absolute; right: -0.25vw; top: 50%;
+  transform: translateY(-50%);
+  width: 0.7vw; height: 0.7vw; border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(var(--accent), 0.6);
+}
+.SliderVal { color: var(--t1); font-size: 0.7vw; min-width: 1.4vw; text-align: right; }
+
+/* Scrollable */
+.Scrollable {
+  display:flex; align-items:center; gap:.35vw;
+  padding: 0.12vw 0.4vw;
+  background: rgba(var(--tint),0.04);
+  border: 1px solid var(--line);
+  border-radius: 0.3vw;
+  color: var(--t1); font-size: 0.7vw;
+}
+.Scrollable i { color: rgb(var(--accent)); font-size: 0.65vw; }
+
+/* Distance badge */
+.PDistBadge {
+  font-size: 0.6vw; font-weight: 700;
+  padding: 0.1vw 0.35vw; border-radius: 0.25vw;
+  color: #fff;
+}
+.PDistBadge.near { background: rgba(var(--success), 0.25); border: 1px solid rgba(var(--success), 0.5); }
+.PDistBadge.mid  { background: rgba(var(--warn), 0.25);    border: 1px solid rgba(var(--warn), 0.5); }
+.PDistBadge.far  { background: rgba(var(--danger), 0.25);  border: 1px solid rgba(var(--danger), 0.5); }
+
+/* Divider row */
+.PTab.is-divider { pointer-events: none; padding-top:.35vw; }
+.PDivider {
+  display: flex; align-items: center; gap: 0.55vw;
+  width: 100%;
+  color: var(--t3);
+  font-size: 0.6vw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.PDivider .DLine { flex:1; height:1px; background: linear-gradient(90deg, transparent, var(--line), transparent); }
+
+/* Empty-state row */
+.PTab.is-empty {
+  pointer-events: none;
+  justify-content: center;
+  text-align: center;
+  color: var(--t3);
+  font-size: 0.72vw;
+  font-weight: 500;
+}
+
+/* Status row */
+.PTab.is-status { pointer-events: none; }
+.PStatusLabel { flex:1; color: var(--t2); font-size:.72vw; }
+.PStatusRight {
+  font-size: 0.7vw; font-weight: 600;
+  color: var(--t1);
+  padding: 0.1vw 0.4vw; border-radius: 0.3vw;
+  background: rgba(var(--tint),0.05);
+  border: 1px solid var(--line);
+}
+
+/* Footer */
+.PFooter {
+  display: flex; align-items: center; gap: 0.5vw;
+  padding: 0.5vw 0.75vw;
+  border-top: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(var(--accent),0.06), transparent 60%),
+    var(--well);
+}
+.FLogo { width: 1.05vw; height: 1.05vw; border-radius: 0.25vw; object-fit: cover; }
+.FBuild { color: var(--t2); font-size: 0.68vw; font-weight: 600; letter-spacing: 0.06em; display:inline-block; transition: opacity 0.35s ease; }
+.FInd { margin-left: auto; color: var(--t3); font-size: 0.68vw; font-variant-numeric: tabular-nums; }
+.FDot { width:.4vw; height:.4vw; border-radius:999px; background: rgb(var(--success)); box-shadow: 0 0 8px rgb(var(--success)); }
+
+/* ---------- Overlays: Input keyboard ---------- */
+@keyframes overlayIn  { from { opacity:0; transform: scale(.92); } to { opacity:1; transform: scale(1); } }
+@keyframes overlayOut { from { opacity:1; transform: scale(1); } to { opacity:0; transform: scale(.92); } }
+.Overlay {
+  position: absolute; inset: 0;
+  background: rgba(6, 8, 14, 0.75);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 40;
+}
+.InputWrapper {
+  width: 88%;
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  border: 1px solid var(--line-strong);
+  border-radius: 0.55vw;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,.55), 0 0 30px rgba(var(--accent),.15);
+}
+.IWHeader {
+  display:flex; align-items:center; gap:.5vw;
+  padding: 0.55vw 0.75vw;
+  border-bottom: 1px solid var(--line);
+  background: rgba(var(--accent), 0.06);
+}
+.IWHeader img { width: 1.1vw; height: 1.1vw; border-radius: .25vw; }
+.IWHeader i   { color: rgb(var(--accent)); font-size: .85vw; }
+.IWHeader span { font-size:.8vw; font-weight:700; }
+.IWLine { width:1px; height:1vw; background: var(--line); }
+.IWBody { padding: 0.75vw; }
+.InsideCon {
+  min-height: 1.7vw;
+  padding: 0.4vw 0.6vw;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 0.35vw;
+  color: var(--t1);
+  font-size: 0.8vw;
+  word-break: break-all;
+}
+.InsideCon::after {
+  content: '';
+  display: inline-block;
+  width: 1px; height: 0.85vw;
+  background: rgb(var(--accent));
+  margin-left: 2px;
+  animation: caret 1s steps(2) infinite;
+  vertical-align: middle;
+}
+@keyframes caret { 50% { opacity: 0; } }
+.IWHint { text-align:center; padding: 0.4vw; color: var(--t3); font-size: 0.65vw; letter-spacing:.08em; }
+
+/* Dropdown overlay */
+.DropOverlay {
+  position: absolute; inset: 0;
+  background: rgba(6,8,14,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 30;
+}
+.DropCard {
+  width: 96%;
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  border: 1px solid var(--line-strong);
+  border-radius: 0.55vw;
+  overflow: hidden;
+}
+.DropCard .IWHeader { border-bottom: 1px solid var(--line); }
+.DropList { position: relative; max-height: 12vw; overflow-y:auto; overflow-x:hidden; padding: 0.25vw; scroll-behavior: smooth; }
+.DropList::-webkit-scrollbar { width: 4px; height: 0; }
+.DropList::-webkit-scrollbar-thumb { background: rgba(var(--accent),0.4); border-radius:4px; }
+
+.DropPill {
+  position: absolute;
+  left: 0; right: 0;
+  border-radius: 0.35vw;
+  background: linear-gradient(90deg, rgba(var(--accent), 0.22), rgba(var(--accent), 0.06));
+  box-shadow: inset 0 0 0 1px rgba(var(--accent), 0.45), 0 0 14px rgba(var(--accent), 0.16);
+  pointer-events: none;
+  transition: top 0.22s cubic-bezier(0.22, 1, 0.36, 1), height 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+  z-index: 0;
+}
+
+.DropRow {
+  position: relative;
+  display:flex; align-items:center; gap:.35vw;
+  padding: 0.4vw 0.6vw;
+  border-radius: 0.35vw;
+  font-size: 0.75vw;
+  color: var(--t2);
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 1;
+  transition: color 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1);
+}
+.DropRow > span:not([class]) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.DropRow.hover {
+  color: var(--t1);
+  transform: translateX(0.15vw);
+}
+.DropRow .DRCheck { color: rgb(var(--accent)); font-size:.7vw; opacity: 0; transition: opacity 0.18s ease, transform 0.18s ease; flex-shrink: 0; }
+.DropRow.hover .DRCheck { opacity: 1; }
+
+.DropRow.is-selected { color: var(--t1); font-weight: 600; }
+.DropRow.is-selected .DRCheck { opacity: 1; transform: scale(1.05); }
+
+.DropRow .DPName { flex: 1; min-width: 4.5vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.DropRow .DPMeta { display: flex; align-items: center; gap: 0.3vw; flex-shrink: 0; }
+.DropRow .DPDist { font-size: 0.6vw; color: var(--t3); min-width: 1.8vw; text-align: right; }
+.DropRow .DPVeh  { width: 0.9vw; text-align: center; font-size: 0.65vw; color: rgb(var(--accent)); }
+
+.DropRow .DVName  { flex: 1; min-width: 4.5vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.DropRow .DVPlate {
+  font-size: 0.55vw; color: var(--t3); flex-shrink: 0; letter-spacing: 0.03em;
+  padding: 0.04vw 0.22vw; border: 1px solid var(--line); border-radius: 0.2vw;
+  max-width: 4vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.DropRow .DVSeats  { display: flex; align-items: center; gap: 0.1vw; flex-shrink: 0; }
+.DropRow .DVSeat   { font-size: 0.5vw; line-height: 1; min-width: 0.4vw; text-align: center; }
+.DropRow .DVPlayer { color: rgb(var(--accent)); }
+.DropRow .DVNpc    { color: var(--t3); }
+.DropRow .DVEmpty  { opacity: 0.25; }
+.DropRow .DVDist   { font-size: 0.6vw; color: var(--t3); min-width: 1.8vw; text-align: right; flex-shrink: 0; }
+
+@keyframes dropRowConfirm {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.035); background: rgba(var(--accent), 0.28); }
+  100% { transform: scale(1); }
+}
+.DropRow.confirming { animation: dropRowConfirm 0.22s ease; border-radius: 0.35vw; }
+
+/* ---------- Spectators panel ---------- */
+.SpecPanel {
+  position: absolute;
+  right: 1.5vw;
+  bottom: 3vh;
+  width: 12vw;
+  background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  z-index: 90;
+  box-shadow: 0 12px 30px rgba(0,0,0,.5);
+}
+@keyframes specIn  { from{opacity:0; transform:translateY(.5vw);} to{opacity:1; transform:none;} }
+@keyframes specOut { from{opacity:1;} to{opacity:0; transform:translateY(.5vw);} }
+.SpecHeader {
+  display:flex; align-items:center; gap:.5vw;
+  padding: 0.5vw 0.7vw;
+  border-bottom: 1px solid var(--line);
+  background: rgba(var(--accent),0.06);
+  font-size:.72vw; font-weight:700;
+}
+.SpecIcon { color: rgb(var(--accent)); }
+.SpecCount {
+  margin-left:auto;
+  padding: 0.1vw 0.4vw;
+  border-radius: 999px;
+  background: rgba(var(--accent),.15);
+  border: 1px solid rgba(var(--accent),.35);
+  color: rgb(var(--accent)); font-size:.6vw;
+}
+.SpecList { max-height: 10vw; overflow-y:auto; padding: 0.35vw; }
+.SpecRow {
+  padding: 0.3vw 0.5vw;
+  font-size: 0.7vw;
+  color: var(--t2);
+  border-radius: 0.3vw;
+}
+.SpecRow + .SpecRow { margin-top: 0.15vw; }
+.SpecEmpty { text-align:center; color: var(--t3); font-size:.7vw; padding:.6vw 0; }
+
+/* ---------- Bubble panel ---------- */
+.BubblePanel {
+  position: absolute;
+  left: 1.5vw;
+  bottom: 3vh;
+  width: 12vw;
+  max-height: 40vh;
+  background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  z-index: 92;
+  box-shadow: 0 12px 30px rgba(0,0,0,.5);
+}
+.BubbleHeader {
+  display:flex; align-items:center; gap:.5vw;
+  padding: 0.5vw 0.7vw;
+  border-bottom: 1px solid var(--line);
+  background: rgba(var(--accent),0.06);
+  font-size:.72vw; font-weight:700;
+}
+.BubbleIcon { color: rgb(var(--accent)); }
+.BubbleCount {
+  margin-left:auto;
+  padding: 0.1vw 0.4vw;
+  border-radius: 999px;
+  background: rgba(var(--accent),.15);
+  border: 1px solid rgba(var(--accent),.35);
+  color: rgb(var(--accent)); font-size:.6vw;
+}
+.BubbleList { max-height: 10vw; overflow-y:auto; padding: 0.35vw; }
+.BubbleRow {
+  padding: 0.3vw 0.5vw;
+  font-size: 0.7vw;
+  color: var(--t2);
+  border-radius: 0.3vw;
+}
+.BubbleRow + .BubbleRow { margin-top: 0.15vw; }
+.BubbleEmpty { text-align:center; color: var(--t3); font-size:.7vw; padding:.6vw 0; }
+
+/* ---------- Admins panel ---------- */
+.AdminPanel {
+  position: absolute;
+  right: 1.5vw;
+  top: 3vh;
+  width: 12vw;
+  max-height: 40vh;
+  background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  z-index: 91;
+  box-shadow: 0 12px 30px rgba(0,0,0,.5);
+}
+.AdminHeader {
+  display:flex; align-items:center; gap:.5vw;
+  padding: 0.5vw 0.7vw;
+  border-bottom: 1px solid var(--line);
+  background: rgba(var(--accent),0.06);
+  font-size:.72vw; font-weight:700;
+}
+.AdminIcon { color: rgb(var(--accent)); }
+.AdminCount {
+  margin-left:auto;
+  padding: 0.1vw 0.4vw;
+  border-radius: 999px;
+  background: rgba(var(--accent),.15);
+  border: 1px solid rgba(var(--accent),.35);
+  color: rgb(var(--accent)); font-size:.6vw;
+}
+.AdminList { max-height: 10vw; overflow-y:auto; padding: 0.35vw; }
+.AdminRow {
+  padding: 0.3vw 0.5vw;
+  font-size: 0.7vw;
+  color: var(--t2);
+  border-radius: 0.3vw;
+}
+.AdminRow + .AdminRow { margin-top: 0.15vw; }
+.AdminEmpty { text-align:center; color: var(--t3); font-size:.7vw; padding:.6vw 0; }
+
+/* ---------- Notifications ---------- */
+.NWrap {
+  position: fixed;
+  right: 1.5vw; top: 3vh;
+  display: flex; flex-direction: column; gap: 0.5vw;
+  z-index: 200;
+  width: 18vw;
+}
+.Notif {
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  border: 1px solid var(--line);
+  border-left: 3px solid rgb(var(--accent));
+  border-radius: 0.5vw;
+  padding: 0.55vw 0.7vw 0.75vw;
+  color: var(--t1);
+  font-size: 0.75vw;
+  box-shadow: 0 12px 30px rgba(0,0,0,.5);
+  position: relative;
+  overflow: hidden;
+}
+.Notif.enter { animation: notifIn .28s cubic-bezier(.16,1,.3,1); }
+.Notif.exit  { animation: notifOut .22s cubic-bezier(.4,0,1,1) forwards; }
+@keyframes notifIn  { from{opacity:0; transform:translateX(1vw);} to{opacity:1; transform:none;} }
+@keyframes notifOut { from{opacity:1;} to{opacity:0; transform:translateX(1vw);} }
+.Notif.success { border-left-color: rgb(var(--success)); }
+.Notif.warning { border-left-color: rgb(var(--warn)); }
+.Notif.error   { border-left-color: rgb(var(--danger)); }
+.NHead { display:flex; align-items:center; gap:.4vw; margin-bottom:.2vw; font-weight:700; font-size:.72vw; }
+.NHead i { color: rgb(var(--accent)); }
+.Notif.success .NHead i { color: rgb(var(--success)); }
+.Notif.warning .NHead i { color: rgb(var(--warn)); }
+.Notif.error   .NHead i { color: rgb(var(--danger)); }
+.NMsg { color: var(--t2); }
+.NProgress {
+  position:absolute; left:0; bottom:0; height:2px; width:100%;
+  background: linear-gradient(90deg, rgba(var(--accent),.9), rgba(var(--accent),.3));
+  transition: width linear;
+}
+.Notif.success .NProgress { background: linear-gradient(90deg, rgba(var(--success),.9), rgba(var(--success),.3)); }
+.Notif.warning .NProgress { background: linear-gradient(90deg, rgba(var(--warn),.9), rgba(var(--warn),.3)); }
+.Notif.error   .NProgress { background: linear-gradient(90deg, rgba(var(--danger),.9), rgba(var(--danger),.3)); }
+</style>
+</head>
+<body>
+
+
+
+<!-- Spectators -->
+<div class="SpecPanel" id="specPanel" style="display:none">
+  <div class="SpecHeader">
+    <i class="fa-solid fa-eye SpecIcon"></i>
+    <span>Spectators</span>
+    <span class="SpecCount" id="specCount">0</span>
+  </div>
+  <div class="SpecList" id="specList"></div>
+</div>
+
+<!-- Bubbles -->
+<div class="BubblePanel" id="bubblePanel" style="display:none">
+  <div class="BubbleHeader">
+    <i class="fa-solid fa-helmet-safety BubbleIcon"></i>
+    <span>Bubbled Users</span>
+    <span class="BubbleCount" id="bubbleCount">0</span>
+  </div>
+  <div class="BubbleList" id="bubbleList"></div>
+</div>
+
+<!-- Admins -->
+<div class="AdminPanel" id="adminPanel" style="display:none">
+  <div class="AdminHeader">
+    <i class="fa-solid fa-user-shield AdminIcon"></i>
+    <span>Active Admins</span>
+    <span class="AdminCount" id="adminCount">0</span>
+  </div>
+  <div class="AdminList" id="adminList"></div>
+</div>
+
+<!-- Main menu -->
+<div class="PWrapper" id="menu" style="display:none">
+  <div id="rainbowFilter">
+
+    <div class="PBanner">
+      <img id="bImg" src="https://files.catbox.moe/71znnd.jpg" draggable="false" onerror="document.getElementById('bImg').style.display='none'; document.getElementById('bPH').style.display='flex';">
+      <div class="BFade"></div>
+      <div class="BTag" style="display:none;">Amethyst Menu</div>
+      <div class="BOver">
+        <div class="BTitle" id="bTitle">Amethyst Menu</div>
+      </div>
+      <div class="BPH" id="bPH" style="display:none">
+        <i class="fa-regular fa-image"></i><span>Banner Image</span>
+      </div>
+    </div>
+
+    <div class="PList" id="scrollableContainer">
+      <div class="PListInner" id="tabsInner">
+        <div class="PHover" id="pill"></div>
+      </div>
+    </div>
+
+    <div class="PFooter">
+      <span class="FBuild" id="footerText">Amethyst Menu</span>
+      <span class="FInd" id="ind">(0/0)</span>
+    </div>
+
+    <!-- Dropdown overlay -->
+    <div class="DropOverlay" id="dropOverlay" style="display:none"></div>
+
+    <!-- Input keyboard overlay -->
+    <div class="Overlay" id="inputOverlay" style="display:none">
+      <div class="InputWrapper">
+        <div class="IWHeader">
+          <img src="https://files.catbox.moe/R93qfDcjY9oG.png" id="fLogo">
+          <div class="IWLine"></div>
+          <i class="fa-solid fa-keyboard"></i>
+          <span id="iwTitle">Input</span>
+        </div>
+        <div class="IWBody">
+          <div class="InsideCon"><span id="iwValue"></span></div>
+        </div>
+        <div class="IWHint">ENTER to confirm &nbsp;·&nbsp; BACKSPACE to cancel</div>
+      </div>
+    </div>
+
+  </div><!-- /rainbowFilter -->
+</div>
+
+<div class="NWrap" id="nwrap"></div>
+<style>
+  #espCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 10;
+  }
+</style>
+<canvas id="espCanvas"></canvas>
+<script>
+  (function() {
+    const canvas = document.getElementById('espCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    window.addEventListener('message', function(e) {
+      const d = e.data;
+      if (!d || d.action !== 'espUpdate') return;
+
+      const data = d.data || {};
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let p of (data.players || [])) {
+        const dist = p.dist || 1;
+        let size = 16 / (1 + dist * 0.025);
+        size = Math.max(8, Math.min(15, size));
+
+        if (p.headPos) {
+          const sx = p.headPos.x * canvas.width;
+          const sy = p.headPos.y * canvas.height;
+          const label = `${p.name || 'Unknown'} (${p.id || '?'})`;
+          ctx.font = `500 ${size}px Inter, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.shadowColor = 'rgba(0,0,0,0.85)';
+          ctx.shadowBlur = 6;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(label, sx, sy);
+        }
+
+        if (p.feetPos) {
+          const fx = p.feetPos.x * canvas.width;
+          const fy = p.feetPos.y * canvas.height;
+          ctx.font = `100 ${size}px Inter, sans-serif`;
+          ctx.textBaseline = 'top';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(`${Math.floor(dist)}m`, fx, fy + 1);
+        }
+      }
+    });
+  })();
+</script>
+<script>
+/* ---------------- State ---------------- */
+let items = [
+  { id: 'menu-self',         label: 'Self',                 type: 'submenu' },
+  { id: 'menu-utilities',    label: 'Utilities',            type: 'submenu' },
+  { id: 'menu-trolls',       label: 'Trolls',               type: 'submenu' },
+  { id: 'menu-vehicles',     label: 'Vehicles',             type: 'submenu' },
+  { id: 'menu-automation',   label: 'Automation',           type: 'submenu' },
+  { id: 'menu-blockers',     label: 'Blockers',             type: 'submenu' },
+  { id: 'menu-spawner',      label: 'Spawner',              type: 'submenu' },
+  { id: 'menu-item-dumper',  label: 'Asset Code Dumper',     type: 'submenu' },
+  { id: 'menu-settings',     label: 'Settings/Server',      type: 'submenu' },
+];
+let hovered = 0;
+let toggles = {};
+let sliderVals = {};
+let scrollVals = {};
+let dropdownState = {};
+let dropdownSelectedKey = {}; 
+let playerDropDisplay = {};
+let inputStore = {};
+let radioGroups = {};
+let breadcrumbStack = ['Select Category'];
+let activeDropdown = null;
+let dropdownHovered = 0;
+
+const ALT_LOGO = 'https://files.catbox.moe/R93qfDcjY9oG.png';
+const FIXED_ACCENT = '168,85,247';
+const FIXED_BANNER = 'https://files.catbox.moe/71znnd.jpg';
+
+const MODE_VARS = {
+  dark:  { tint:'255,255,255', bg0:'rgba(12,12,12,0.92)',    bg1:'rgba(22,22,22,0.9)',    bg2:'rgba(28,28,28,0.7)',    well:'rgba(0,0,0,0.35)' },
+  light: { tint:'0,0,0',       bg0:'rgba(248,248,248,0.94)', bg1:'rgba(232,232,232,0.92)', bg2:'rgba(222,222,222,0.7)', well:'rgba(0,0,0,0.08)' },
+};
+
+/* ---------------- Icon inference ---------------- */
+const ICON_RULES = [
+  [/^(revive|resurrect)/,           'fa-heart-pulse'],
+  [/thirst|drink|water/,            'fa-glass-water'],
+  [/track-target-player/,           'fa-shoe-prints'],
+  [/auto-rob|hands-up/,           'fa-people-robbery'],
+  [/kill/,           'fa-skull'],
+  [/talk/,           'fa-bullhorn'],
+  [/aggro/,           'fa-face-angry'],
+  [/gta-ram/,           'fa-angle-right'],
+  [/inst-ram/,           'fa-angles-right'],
+  [/laser-eyes/,           'fa-mask'],
+  [/crashself/,           'fa-power-off'],
+  [/solo-session/,           'fa-person'],
+  [/black-hole/,           'fa-user-astronaut'],
+  [/tt-e/,           'fa-bullhorn'],
+  [/mega-bat/,           'fa-baseball-bat-ball'],
+  [/throw/,           'fa-dumbbell'],
+  [/shift-boost/,           'fa-angles-right'],
+  [/veh-instant-brake/,           'fa-traffic-light'],
+  [/veh-hop/,           'fa-frog'],
+  [/veh-freeze/,           'fa-icicles'],
+  [/drift-mode/,           'fa-wind'],
+  [/seatbelt-set/,           'fa-shield-heart'],
+  [/drive-up/,           'fa-anchor-circle-check'],
+  [/crash-mode/,           'fa-person-burst'],
+  [/hunger|food/,               'fa-utensils'],
+  [/explode|rctarget|rcveh|explosive|explo/,               'fa-explosion'],
+  [/no-reload/,               'fa-rotate-right'],
+  [/insta-reload/,               'fa-arrows-spin'],
+  [/inf-ammo/,               'fa-infinity'],
+  [/radio/,               'fa-walkie-talkie'],
+  [/phonenumber/,               'fa-phone-volume'],
+  [/no-clip|noclip|fly/,               'fa-feather'],
+  [/door/,               'fa-door-open'],
+  [/getplayerinfo/,               'fa-id-card'],
+  [/ban/,               'fa-person-circle-xmark'],
+  [/destroyserver|prop-spam|spam-prop/,               'fa-bomb'],
+  [/checkonline/,               'fa-signal'],
+  [/bypassplaytime/,               'fa-clock'],
+  [/fireac|feloxinject|fginject|reaperinject|reapersafeinject|finiinject|electroninject|eagleinject|meowinject|phoenixinject|likizaoinject/,               'fa-shield-virus'],
+  [/bb-hat/,               'fa-helmet-safety'],
+  [/bb-b2/,               'fa-vest'],
+  [/bb-body/,               'fa-eye-slash'],
+  [/bb-b/,               'fa-person-shelter'],
+  [/weaponspoof/,               'fa-ghost'],
+  [/spoofweapon/,               'fa-person-rifle'],
+  [/screen/,               'fa-video-slash'],
+  [/delvehplayer|removeweapon/,                          'fa-trash-can'],
+  [/wheel|engine|repair/,               'fa-screwdriver-wrench'],
+  [/outfit/,                        'fa-shirt'],
+  [/stress/,                        'fa-face-tired'],
+  [/dump/,                          'fa-folder-tree'],
+  [/crutch/,                        'fa-crutch'],
+  [/char.*creat/,                   'fa-user-pen'],
+  [/cloth/,                         'fa-shirt'],
+  [/starter/,                       'fa-gift'],
+  [/god.*mode|god-mode|tx-godmode/, 'fa-shield-halved'],
+  [/punch/,                         'fa-hand-fist'],
+  [/run|speed/,                     'fa-person-running'],
+  [/jump/,                          'fa-arrow-up-from-bracket'],
+  [/stamina/,                       'fa-bolt'],
+  [/invisib|invis/,                       'fa-user-secret'],
+  [/noclip|spy|spoof/,                        'fa-ghost'],
+  [/fullhooking/,                        'fa-anchor'],
+  [/show.*id|player.*id|tx-show-ids/, 'fa-id-badge'],
+  [/takelocation|takeToLocation|take-to|loc-teleport-select/, 'fa-location-dot'],
+  [/teleport|tp/,                        'fa-map-location-dot'],
+  [/waypoint/,                      'fa-map-pin'],
+  [/coms/,                          'fa-broom'],
+  [/jail/,                          'fa-handcuffs'],
+  [/hospital/,                      'fa-hospital'],
+  [/airport|plane/,                 'fa-plane'],
+  [/bank/,                          'fa-building-columns'],
+  [/military|base/,                 'fa-shield'],
+  [/driveby/,     'fa-car-side'],
+  [/spawn.*veh|vehicle.*spawn/,     'fa-car'],
+  [/vehicle|veh-select/,        'fa-car'],
+  [/key|giveveh/,                           'fa-key'],
+  [/spawn.*money|give.*money/,      'fa-sack-dollar'],
+  [/money/,                         'fa-dollar-sign'],
+  [/spawn/,                         'fa-box-open'],
+  [/sell/,                          'fa-tag'],
+  [/launch/,                        'fa-rocket'],
+  [/troll|target/,                  'fa-crosshairs'],
+  [/spectate/,                      'fa-eye'],
+  [/block|anti-|disable/,           'fa-ban'],
+  [/screenshot/,                    'fa-camera'],
+  [/blackscreen/,                   'fa-tv'],
+  [/attach|dildo/,                        'fa-link'],
+  [/chat|voice/,               'fa-comments'],
+  [/notify|notification/,           'fa-bell'],
+  [/hello|say/,                     'fa-comment'],
+  [/trigger|event|fire/,            'fa-bolt-lightning'],
+  [/volume|sound/,                  'fa-volume-high'],
+  [/theme|color/,                   'fa-palette'],
+  [/status|info/,                   'fa-circle-info'],
+  [/pos-x|pos-y|position/,          'fa-arrows-up-down-left-right'],
+  [/self/,                          'fa-user'],
+  [/utili|tool/,                    'fa-toolbox'],
+  [/vehicle/i,                      'fa-car'],
+  [/automat|showreal/,                       'fa-robot'],
+  [/spawner/,                       'fa-cube'],
+  [/setting/,                       'fa-gear'],
+  [/submenu|main/,                  'fa-list'],
+];
+
+function iconFor(item) {
+  if (!item) return 'fa-circle';
+  if (item.icon) return item.icon; 
+  const key = String((item.id || item.action || item.label || '')).toLowerCase();
+  for (const [re, icon] of ICON_RULES) if (re.test(key)) return icon;
+  switch (item.type) {
+    case 'submenu':      return 'fa-folder';
+    case 'toggle':       return 'fa-toggle-on';
+    case 'radiotoggle':  return 'fa-circle-dot';
+    case 'dropdown':     return 'fa-chevron-down';
+    case 'slider':       return 'fa-sliders';
+    case 'scrollable':   return 'fa-shuffle';
+    case 'action':       return 'fa-bolt';
+    case 'status':       return 'fa-circle-info';
+    default:             return 'fa-circle';
+  }
+}
+
+/* ---------------- Warn helpers ---------------- */
+function itemHasWarn(item) {
+  if (!item) return false;
+  const truthy = v => v === true || v === 1 || v === '1' || v === 'true';
+  if (['warn','warning','danger','risky'].some(k => truthy(item[k]))) return true;
+  const id = String(item.id || item.action || '').toLowerCase();
+  const label = String(item.label || '').toLowerCase();
+  const dangerRe = /(tx[-_ ]?admin[-_ ]?noclip|tx[-_ ]?noclip|multi[-_ ]?burst[-_ ]?player|explode player #1|laser eyes|explode vehicle #1|taze player|ban player|explosive ammo|spawn aggressive ped|spawn lazy clone ped|hook possible|normal spectate player|auto rob player #2|pac server nuker)/i;
+  return dangerRe.test(id) || dangerRe.test(label);
+}
+function normalizeWarnItems(list) {
+  if (!Array.isArray(list)) return list;
+  return list
+    .filter(item => item && item.id !== 'theme-select' && item.id !== 'banner-select')
+    .map(item => {
+      if (!item || typeof item !== 'object') return item;
+      const next = { ...item };
+      if (itemHasWarn(next)) next.warn = true;
+      if (Array.isArray(next.items)) next.items = normalizeWarnItems(next.items);
+      return next;
+    });
+}
+
+function parsePlayerOption(s) {
+  const m = String(s).match(/^(.*?)\s+(\d+(?:\.\d+)?\s*m)(?:\s+(V))?\s*$/i);
+  if (!m) return null;
+  return { name: m[1].trim(), dist: m[2].trim(), inVehicle: !!m[3] };
+}
+function parseVehicleOption(s) {
+  const m = String(s).match(/^(.*?)\s+(\S+)\s+(\d+(?:\.\d+)?\s*m)\s+([A-Za-z]*)\s*$/i);
+  if (!m) return null;
+  return { name: m[1].trim(), plate: m[2].trim(), dist: m[3].trim(), seats: m[4] };
+}
+
+function formatDropRowInner(itemId, opt) {
+  const s = String(opt);
+  if (itemId === 'player-select') {
+    const p = parsePlayerOption(s);
+    if (p) {
+      return `<span class="DPName">${p.name}</span>
+        <span class="DPMeta">
+          <span class="DPDist">${p.dist}</span>
+          ${p.inVehicle ? '<i class="fa-solid fa-car DPVeh"></i>' : '<span class="DPVeh"></span>'}
+        </span>`;
+    }
+  }
+  if (itemId === 'veh-select') {
+    const v = parseVehicleOption(s);
+    if (v) {
+      const seats = v.seats.split('').slice(0, 6).map(c =>
+        `<i class="fa-solid ${c === 'P' ? 'fa-user' : 'fa-user-slash'} DVSeat ${c === 'P' ? 'DVPlayer' : 'DVNpc'}"></i>`
+      ).join('');
+      const empty = Array(Math.max(0, 6 - v.seats.length)).fill('<span class="DVSeat DVEmpty"></span>').join('');
+      return `<span class="DVName">${v.name}</span>
+        <span class="DVPlate">${v.plate}</span>
+        <span class="DVSeats">${seats}${empty}</span>
+        <span class="DVDist">${v.dist}</span>`;
+    }
+  }
+  return `<span>${s}</span>`;
+}
+
+function optionIdentityKey(label, itemId) {
+  const s = String(label);
+  if (itemId === 'veh-select') {
+    const v = parseVehicleOption(s);
+    if (v) return v.plate;
+  } else if (itemId === 'player-select') {
+    const p = parsePlayerOption(s);
+    if (p) return p.name;
+  }
+  return s.replace(/\s*[\(\[]?\s*[\d.]+\s*m\)?\]?\s*$/i, '').trim();
+}
+
+function mergeDropdownOptions(oldOpts, newOpts, itemId) {
+  const pool = (newOpts || []).map(label => ({ label, key: optionIdentityKey(label, itemId), used: false }));
+  const merged = [];
+  (oldOpts || []).forEach(oldLabel => {
+    const oldKey = optionIdentityKey(oldLabel, itemId);
+    const match = pool.find(n => !n.used && n.key === oldKey);
+    if (match) { match.used = true; merged.push(match.label); }
+  });
+  pool.forEach(n => { if (!n.used) merged.push(n.label); });
+  return merged;
+}
+
+function resolveSelectedIndex(item) {
+  if (!item) return null;
+  const opts = item.options || [];
+  const key = dropdownSelectedKey[item.id];
+  if (key !== undefined) {
+    const idx = opts.findIndex(o => optionIdentityKey(o, item.id) === key);
+    return idx !== -1 ? idx : null;
+  }
+  return dropdownState[item.id] !== undefined ? dropdownState[item.id] : null;
+}
+
+function post(payload) {
+  try { window.parent && window.parent.postMessage(payload, '*'); } catch(_) {}
+}
+
+/* ---------------- Render ---------------- */
+function render() {
+  const inner = document.getElementById('tabsInner');
+  [...inner.querySelectorAll('.PTab')].forEach(r => r.remove());
+
+  items.forEach((item, abs) => {
+    const row = document.createElement('div');
+    row.className = 'PTab' + (abs === hovered ? ' active' : '');
+    row.dataset.idx = abs;
+
+    if (item.type === 'divider') {
+      row.className += ' is-divider';
+      row.innerHTML = `<div class="PDivider"><div class="DLine"></div><span>${item.label||''}</span><div class="DLine"></div></div>`;
+      inner.appendChild(row);
+      return;
+    }
+
+    if (item.type === 'empty') {
+      row.className += ' is-empty';
+      row.innerHTML = `<span>${item.label || 'Nothing here'}</span>`;
+      inner.appendChild(row);
+      return;
+    }
+
+    const warn = itemHasWarn(item);
+    if (warn) row.className += ' warn';
+
+    const icon = iconFor(item);
+    const iconHTML = `<i class="PTIcon fa-solid ${icon}"></i>`;
+    const labelHTML = `<div class="PTLabel"><span class="PTLabelText">${item.label||''}</span>${warn?'<i class="fa-solid fa-triangle-exclamation PWarnIcon" title="Risky"></i>':''}</div>`;
+
+    if (item.type === 'submenu') {
+      row.innerHTML = `${iconHTML}${labelHTML}<i class="PTArrow fa-solid fa-angle-right"></i>`;
+    } else if (item.type === 'toggle') {
+      const on = toggles[item.id] !== undefined ? !!toggles[item.id] : !!item.value;
+      row.innerHTML = `${iconHTML}${labelHTML}<div class="TOptions"><div class="Checkbox ${on?'Checked':''}"><div class="Inside"></div></div></div>`;
+    } else if (item.type === 'slider') {
+      const min = item.min ?? 0, max = item.max ?? 100;
+      const v = sliderVals[item.id] !== undefined ? sliderVals[item.id] : (item.value ?? min);
+      const pct = max > min ? ((v - min) / (max - min) * 100) : 0;
+      row.innerHTML = `${iconHTML}${labelHTML}<div class="TOptions"><div class="Slider" data-sid="${item.id}"><div class="Progress" style="width:${pct}%"><div class="Thumb"></div></div></div><span class="SliderVal">${v}</span></div>`;
+    } else if (item.type === 'scrollable') {
+      const opts = item.options||[], idx = scrollVals[item.id]||0;
+      row.innerHTML = `${iconHTML}${labelHTML}<div class="TOptions"><div class="Scrollable"><i class="fa-solid fa-angle-left"></i><span>${opts[idx]||''}</span><i class="fa-solid fa-angle-right"></i></div></div>`;
+    } else if (item.type === 'dropdown') {
+      const opts = item.options||[];
+      const selIdx = resolveSelectedIndex(item);
+      const override = playerDropDisplay[item.id];
+      const label = override !== undefined ? override : (selIdx !== null ? opts[selIdx] : '...');
+      row.innerHTML = `${iconHTML}${labelHTML}<span class="PDropLabel">${label||'...'}</span>`;
+    } else if (item.type === 'action') {
+      if (item.inputs && item.inputs.length) {
+        const raw = item.inputs.map(i => inputStore[i.id]||'').filter(Boolean).join(', ');
+        const preview = raw.length > 14 ? raw.slice(0,14)+'…' : (raw || '...');
+        row.innerHTML = `${iconHTML}${labelHTML}<div class="PInputRight"><span class="PInputVal" title="${raw.replace(/"/g,'&quot;')}">${preview}</span><i class="fa-solid fa-keyboard"></i></div>`;
+      } else {
+        row.innerHTML = `${iconHTML}${labelHTML}`;
+      }
+    } else if (item.type === 'status') {
+      row.className = row.className.replace('PTab', 'PTab is-status');
+      const rawText = item.text || '';
+      const colonIdx = rawText.indexOf(': ');
+      const left  = colonIdx !== -1 ? rawText.slice(0, colonIdx) : (item.label || '');
+      const right = colonIdx !== -1 ? rawText.slice(colonIdx + 2) : rawText;
+      let color = '';
+      if (right === 'Supported' || /online|ok|active/i.test(right)) color = 'color:rgb(var(--success));';
+      else if (right === 'Unsupported' || /offline|fail|error/i.test(right)) color = 'color:rgb(var(--danger));';
+      row.innerHTML = `${iconHTML}<span class="PStatusLabel">${left}</span><span class="PStatusRight" id="sv-${item.id||''}" style="${color}">${right}</span>`;
+    } else if (item.type === 'radiotoggle') {
+      const on = (radioGroups[item.group] === item.id);
+      const dist = item.dist || '';
+      const dn = parseInt(dist);
+      const dc = dn<=20?'near':dn<=100?'mid':'far';
+      row.innerHTML = `${iconHTML}${labelHTML}<div class="TOptions">${dist?`<span class="PDistBadge ${dc}">${dist}</span>`:''}<div class="Checkbox ${on?'Checked':''}"><div class="Inside"></div></div></div>`;
+    } else {
+      row.innerHTML = `${iconHTML}${labelHTML}`;
+    }
+
+    inner.appendChild(row);
+  });
+
+  updatePill();
+  updateBreadcrumb();
+  updateFooter();
+}
+
+function updatePill() {
+  const pill = document.getElementById('pill');
+  const target = document.querySelector(`.PTab[data-idx="${hovered}"]`);
+  if (!pill || !target) return;
+  pill.style.top = target.offsetTop + 'px';
+  pill.style.height = target.offsetHeight + 'px';
+
+  const container = document.getElementById('scrollableContainer');
+  const prevRow = target.previousElementSibling;
+  const isFirstOfSection = prevRow && prevRow.classList.contains('is-divider');
+
+  if (isFirstOfSection) {
+    container.scrollTop = prevRow.offsetTop;
+  } else {
+    const cTop = container.scrollTop;
+    const cBottom = cTop + container.clientHeight;
+    const tTop = target.offsetTop;
+    const tBottom = tTop + target.offsetHeight;
+    if (tTop < cTop) container.scrollTop = tTop;
+    else if (tBottom > cBottom) container.scrollTop = tBottom - container.clientHeight;
+  }
+}
+
+function updateBreadcrumb() {
+  const bt = document.getElementById('bTitle');
+  if (!bt) return;
+  const current = breadcrumbStack[breadcrumbStack.length - 1];
+  if (breadcrumbStack.length > 1) {
+    bt.innerHTML = `<i class="fa-solid fa-angle-right"></i><span>${current}</span>`;
+  } else {
+    bt.innerHTML = `<span>Amethyst Menu</span>`;
+  }
+}
+
+function updateFooter() {
+  const el = document.getElementById('ind');
+  if (!el) return;
+  const countable = items.filter(i => i.type !== 'divider' && i.type !== 'status' && i.type !== 'empty');
+  const hovItem = items[hovered];
+  const pos = hovItem && hovItem.type !== 'divider' && hovItem.type !== 'status' && hovItem.type !== 'empty'
+    ? countable.indexOf(hovItem) + 1 : null;
+  el.textContent = pos !== null ? `(${pos}/${countable.length})` : `(-/${countable.length})`;
+}
+
+/* ---------------- Overlays ---------------- */
+let inputOverlayHideHandler = null;
+function showInputOverlay(title, val) {
+  const ov = document.getElementById('inputOverlay');
+  if (inputOverlayHideHandler) {
+    ov.removeEventListener('animationend', inputOverlayHideHandler);
+    inputOverlayHideHandler = null;
+  }
+  document.getElementById('iwTitle').textContent = title || 'Input';
+  document.getElementById('iwValue').textContent = val || '';
+  ov.style.display = 'flex';
+  ov.style.animation = 'overlayIn .2s cubic-bezier(.16,1,.3,1)';
+}
+function closeInputOverlay() {
+  const ov = document.getElementById('inputOverlay');
+  if (ov.style.display === 'none') return;
+  ov.style.animation = 'overlayOut .16s cubic-bezier(.4,0,1,1) forwards';
+  inputOverlayHideHandler = () => {
+    ov.style.display = 'none';
+    ov.style.animation = '';
+    inputOverlayHideHandler = null;
+  };
+  ov.addEventListener('animationend', inputOverlayHideHandler, { once: true });
+}
+
+function openDropdown(item) {
+  if (item && (item.id === 'theme-select' || item.id === 'banner-select')) return;
+  activeDropdown = item;
+  const resolvedSel = resolveSelectedIndex(item);
+  dropdownHovered = resolvedSel !== null ? resolvedSel : 0;
+  const ov = document.getElementById('dropOverlay');
+  ov._item = item;
+
+  const build = () => {
+    const opts = item.options || [];
+    ov.innerHTML = `
+      <div class="DropCard">
+        <div class="IWHeader">
+          <img src="${document.getElementById('fLogo').src}" />
+          <div class="IWLine"></div>
+          <i class="fa-solid fa-list-ul"></i>
+          <span>${item.label || 'Select'}</span>
+        </div>
+        <div class="DropList" id="dropListInner">
+          <div class="DropPill" id="dropPill"></div>
+          ${opts.map((o,i) => `<div class="DropRow" data-i="${i}"><i class="fa-solid fa-check DRCheck"></i>${formatDropRowInner(item.id, o)}</div>`).join('')}
+          ${opts.length === 0 ? `<div class="SpecEmpty">No options</div>` : ''}
+        </div>
+      </div>`;
+    highlightDropRow(dropdownHovered, true);
+  };
+  ov._rebuild = build;
+  ov.style.display = 'flex';
+  ov.style.animation = 'overlayIn .2s cubic-bezier(.16,1,.3,1)';
+  build();
+}
+
+function patchDropRows(ov) {
+  const item = ov._item;
+  const list = ov.querySelector('#dropListInner');
+  if (!item || !list) return;
+  const opts = item.options || [];
+  const rows = Array.from(list.querySelectorAll('.DropRow'));
+
+  opts.forEach((o, i) => {
+    let row = rows[i];
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'DropRow';
+      list.appendChild(row);
+    }
+    row.dataset.i = i;
+    const inner = `<i class="fa-solid fa-check DRCheck"></i>${formatDropRowInner(item.id, o)}`;
+    if (row.innerHTML !== inner) row.innerHTML = inner;
+  });
+  for (let i = opts.length; i < rows.length; i++) rows[i].remove();
+
+  const emptyMsg = list.querySelector('.SpecEmpty');
+  if (opts.length === 0 && !emptyMsg) {
+    list.insertAdjacentHTML('beforeend', `<div class="SpecEmpty">No options</div>`);
+  } else if (opts.length > 0 && emptyMsg) {
+    emptyMsg.remove();
+  }
+}
+
+function highlightDropRow(idx, instant) {
+  const ov = document.getElementById('dropOverlay');
+  const pill = ov.querySelector('#dropPill');
+  const rows = ov.querySelectorAll('.DropRow');
+  if (!rows.length) { if (pill) pill.style.opacity = '0'; return; }
+  dropdownHovered = idx;
+  const selIdx = activeDropdown ? resolveSelectedIndex(activeDropdown) : null;
+  const active = ov.querySelector(`.DropRow[data-i="${idx}"]`);
+  rows.forEach(r => {
+    const i = parseInt(r.dataset.i, 10);
+    r.classList.toggle('hover', r === active);
+    r.classList.toggle('is-selected', i === selIdx);
+  });
+  if (pill && active) {
+    if (instant) pill.style.transition = 'none';
+    pill.style.opacity = '1';
+    pill.style.top = active.offsetTop + 'px';
+    pill.style.height = active.offsetHeight + 'px';
+    if (instant) {
+      void pill.offsetHeight;
+      pill.style.transition = '';
+    }
+    active.scrollIntoView({ block: 'nearest' });
+  } else if (pill) {
+    pill.style.opacity = '0';
+  }
+}
+
+function closeDropdown() {
+  activeDropdown = null;
+  const ov = document.getElementById('dropOverlay');
+  if (ov.style.display === 'none') { ov._item = null; return; }
+  ov.style.animation = 'overlayOut .16s cubic-bezier(.4,0,1,1) forwards';
+  ov.addEventListener('animationend', () => {
+    ov.style.display = 'none';
+    ov.style.animation = '';
+    ov.innerHTML = '';
+  }, { once: true });
+  ov._item = null;
+}
+
+function selectDropOption(item, idx) {
+  dropdownState[item.id] = idx;
+  const disp = (item.options || [])[idx];
+  if (disp !== undefined) {
+    playerDropDisplay[item.id] = disp;
+    dropdownSelectedKey[item.id] = optionIdentityKey(disp, item.id);
+  }
+
+  const ov = document.getElementById('dropOverlay');
+  const row = ov.querySelector(`.DropRow[data-i="${idx}"]`);
+  const finish = () => { closeDropdown(); render(); };
+  if (row) {
+    row.classList.add('confirming');
+    row.addEventListener('animationend', finish, { once: true });
+  } else {
+    finish();
+  }
+}
+
+/* ---------------- Theme / logo fixed setting ---------------- */
+function applyTheme() {
+  document.querySelectorAll('.FLogo, .IWHeader img').forEach(img => img.src = ALT_LOGO);
+  const menu = document.getElementById('menu');
+  menu.classList.remove('rainbow-active');
+
+  document.documentElement.style.setProperty('--accent', FIXED_ACCENT);
+  document.documentElement.style.setProperty('--border-alpha', '0.28');
+  setBanner();
+
+  const mv = MODE_VARS['dark'];
+  document.documentElement.style.setProperty('--tint', mv.tint);
+  document.documentElement.style.setProperty('--bg-0', mv.bg0);
+  document.documentElement.style.setProperty('--bg-1', mv.bg1);
+  document.documentElement.style.setProperty('--bg-2', mv.bg2);
+  document.documentElement.style.setProperty('--well', mv.well);
+}
+
+function setBanner() {
+  const img = document.getElementById('bImg');
+  const ph  = document.getElementById('bPH');
+  if (!img) return;
+  ph.style.display = 'none';
+  img.style.display = 'block';
+  img.src = FIXED_BANNER;
+}
+
+function setStatus(id, text, style) {
+  const el = document.getElementById('sv-' + id);
+  if (el) { el.textContent = text; if (style) el.className = 'PStatusRight ' + style; }
+  const it = items.find(i => i.id === id);
+  if (it) it.text = (it.text && it.text.includes(': ')) ? it.text.split(': ')[0] + ': ' + text : text;
+}
+
+/* ---------------- Menu show/hide anim ---------------- */
+function popInMenu() {
+  const menu = document.getElementById('menu');
+  menu.style.display = 'flex';
+  menu.style.animation = 'menuPopIn .22s cubic-bezier(.16,1,.3,1)';
+}
+
+function toggleMenuWeb() {
+  const menu = document.getElementById('menu');
+  if (menu.style.display === 'none') {
+    menu.style.display = 'flex';
+    popInMenu();
+  } else {
+    menu.style.animation = 'menuPopOut .2s cubic-bezier(.4,0,1,1) forwards';
+    menu.addEventListener('animationend', () => {
+      menu.style.display = 'none';
+      menu.style.animation = '';
+    }, { once: true });
+  }
+}
+
+/* ---------------- Notifications ---------------- */
+function showNotif(msg, type='info', title=null, dur=3200) {
+  const wrap = document.getElementById('nwrap');
+  const el = document.createElement('div');
+  el.className = `Notif ${type} enter`;
+  const icons = { info:'fa-circle-info', success:'fa-circle-check', warning:'fa-triangle-exclamation', error:'fa-circle-xmark' };
+  const titles = { info:'Info', success:'Success', warning:'Warning', error:'Error' };
+  el.innerHTML = `
+    <div class="NHead"><i class="fa-solid ${icons[type]||icons.info}"></i><span>${title||titles[type]||'Info'}</span></div>
+    <div class="NMsg">${msg||''}</div>
+    <div class="NProgress" style="width:100%"></div>`;
+  wrap.appendChild(el);
+  const prog = el.querySelector('.NProgress');
+  if (prog) {
+    prog.style.transitionDuration = dur + 'ms';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ prog.style.width='0%'; }));
+  }
+  setTimeout(()=>{ el.classList.remove('enter'); el.classList.add('exit'); setTimeout(()=>el.remove(), 220); }, dur);
+}
+
+
+
+/* Delegate item row click in browser preview */
+document.getElementById('tabsInner').addEventListener('click', e => {
+  const row = e.target.closest('.PTab');
+  if (!row) return;
+  const idx = parseInt(row.dataset.idx, 10);
+  if (isNaN(idx)) return;
+  hovered = idx;
+  const item = items[idx];
+  if (!item) return;
+
+  if (item.type === 'toggle') {
+    toggles[item.id] = !toggles[item.id];
+  } else if (item.type === 'dropdown') {
+    openDropdown(item);
+  } else if (item.type === 'action') {
+    showNotif(`Triggered action: ${item.label}`, 'success', 'Action');
+  }
+  render();
+});
+
+/* ---------------- Dropdown row hover click ---------------- */
+document.getElementById('dropOverlay').addEventListener('click', e => {
+  const row = e.target.closest('.DropRow');
+  if (!row || !activeDropdown) return;
+  const idx = parseInt(row.dataset.i, 10);
+  selectDropOption(activeDropdown, idx);
+});
+
+/* ---------------- Ready signal ---------------- */
+window._loaderDone = true;
+
+applyTheme();
+document.getElementById('menu').style.display = 'flex';
+render();
+popInMenu();
+
+/* ---------------- Footer text rotation ---------------- */
+const FOOTER_ROTATE_MS = 30000;
+const FOOTER_FADE_MS = 350;
+const FOOTER_MESSAGES = [
+  'Amethyst Menu',
+  'https://discord.gg/DNCxTahnxF',
+];
+let footerRotationIdx = 0;
+let footerRotationHoldUntil = 0;
+
+function setFooterText(text) {
+  const el = document.getElementById('footerText');
+  if (!el) return;
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = text;
+    el.style.opacity = '1';
+  }, FOOTER_FADE_MS);
+}
+
+setInterval(() => {
+  if (Date.now() < footerRotationHoldUntil) return;
+  footerRotationIdx = (footerRotationIdx + 1) % FOOTER_MESSAGES.length;
+  setFooterText(FOOTER_MESSAGES[footerRotationIdx]);
+}, FOOTER_ROTATE_MS);
+</script>
+
+</body></html>
