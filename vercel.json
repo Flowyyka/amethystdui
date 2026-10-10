@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "amethyst-menu",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/html/index.html", "destination": "/index.html" },
+    { "source": "/html", "destination": "/index.html" },
+    { "source": "/dui.html", "destination": "/index.html" }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "amethyst-menu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Amethyst Admin Menu - Modern Web Interface",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}
